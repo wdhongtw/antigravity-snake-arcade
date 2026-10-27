@@ -1,0 +1,12 @@
+{
+  "name": "snake-arcade",
+  "displayName": "Snake Arcade",
+  "description": "Tactical arcade Snake game for the Extensions sidebar and Auxiliary Pane with Classic, Wrap, Maze, and 90s Blitz modes, combo streaks, power-ups, and persistent leaderboards.",
+  "version": "0.1.1",
+  "logo": "assets/logo.svg",
+  "suggestedPrompts": [
+    "Open Snake Arcade in the side pane while I wait",
+    "Show my top Snake Arcade high scores and stats",
+    "How do the game modes and combo multipliers work in Snake Arcade?"
+  ]
+}

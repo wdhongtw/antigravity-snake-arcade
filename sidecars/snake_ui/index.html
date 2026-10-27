@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="referrer" content="no-referrer" />
+  <meta
+    name="description"
+    content="Tactical arcade Snake game for the Extensions sidebar and Auxiliary Pane with Classic, Wrap, Maze, and 90s Blitz modes, combo streaks, power-ups, and persistent high scores."
+  />
+  <title>Snake Arcade</title>
+  <link rel="stylesheet" href="/styles.css" />
+</head>
+<body>
+  <div class="arcade-shell">
+    <!-- Top Header & Mode Switcher -->
+    <header class="arcade-header">
+      <div class="brand-cluster">
+        <div class="brand-mark" aria-hidden="true">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M4 18h5a3 3 0 0 0 3-3v-3a3 3 0 0 1 3-3h4"></path>
+            <circle cx="19" cy="9" r="2"></circle>
+            <circle cx="19" cy="4" r="1.5" fill="currentColor"></circle>
+          </svg>
+        </div>
+        <div class="brand-text">
+          <h1 id="arcadeTitle">Snake Arcade</h1>
+          <div class="brand-subtitle">
+            <span id="modeDescriptionText">Solid arena walls • Pace accelerates as your snake grows</span>
+          </div>
+        </div>
+      </div>
+
+      <nav class="mode-tabs" aria-label="Game modes">
+        <button id="modeTabClassic" class="mode-tab active" data-mode="classic" type="button">
+          Classic
+        </button>
+        <button id="modeTabWrap" class="mode-tab" data-mode="wrap" type="button">
+          Wrap
+        </button>
+        <button id="modeTabMaze" class="mode-tab" data-mode="maze" type="button">
+          Maze
+        </button>
+        <button id="modeTabBlitz" class="mode-tab" data-mode="blitz" type="button">
+          90s Blitz
+        </button>
+      </nav>
+
+      <div class="header-actions">
+        <button id="btnToggleSound" class="btn btn-active" type="button" title="Toggle Web Audio sound effects (M)">
+          SFX: On
+        </button>
+        <button id="btnPauseResume" class="btn" type="button" title="Pause or Resume game (Space)">
+          Pause
+        </button>
+        <button id="btnRestartGame" class="btn btn-primary" type="button" title="Start or Restart run (R)">
+          New Run
+        </button>
+      </div>
+    </header>
+
+    <!-- Main Two-Column Arcade Workspace -->
+    <div class="arcade-workspace">
+      <!-- Left / Center Stage Column -->
+      <main class="stage-column">
+        <!-- Live Telemetry HUD Ribbon -->
+        <section class="hud-ribbon" aria-label="Live game telemetry">
+          <div class="hud-card">
+            <div class="hud-label">
+              <span>Score</span>
+              <span id="hudActiveEffectTag"></span>
+            </div>
+            <div class="hud-value" id="hudScore">0</div>
+          </div>
+
+          <div class="hud-card">
+            <div class="hud-label">
+              <span>Mode Best</span>
+              <span id="hudModeLabel">CLASSIC</span>
+            </div>
+            <div class="hud-value" id="hudHighScore">0</div>
+          </div>
+
+          <div class="hud-card">
+            <div class="hud-label">
+              <span>Combo Streak</span>
+              <span id="hudComboCount">0 streak</span>
+            </div>
+            <div class="hud-value" id="hudComboMultiplier">1.0x</div>
+            <div class="combo-meter-track">
+              <div class="combo-meter-fill" id="hudComboBar"></div>
+            </div>
+          </div>
+
+          <div class="hud-card">
+            <div class="hud-label">
+              <span>Length</span>
+              <span id="hudApplesCount">0 eaten</span>
+            </div>
+            <div class="hud-value" id="hudLength">3</div>
+          </div>
+
+          <div class="hud-card">
+            <div class="hud-label">
+              <span id="hudFifthLabel">Pace</span>
+              <span id="hudPaceSub">Level 1</span>
+            </div>
+            <div class="hud-value" id="hudFifthValue">1.00x</div>
+          </div>
+        </section>
+
+        <!-- High-DPI Canvas Arena Stage -->
+        <div class="canvas-stage" id="canvasStage">
+          <div class="status-banner" id="statusBanner" role="status" aria-live="polite"></div>
+          <canvas id="gameCanvas" width="660" height="660" aria-label="Snake game arena"></canvas>
+
+          <!-- Interactive Start / Pause / Game Over Overlay -->
+          <div class="stage-overlay visible" id="stageOverlay">
+            <div class="overlay-dialog">
+              <span class="overlay-badge" id="overlayBadge">READY TO LAUNCH</span>
+              <h2 id="overlayHeading">Snake Arcade</h2>
+              <p id="overlayMessage">
+                Chain apples quickly to build your combo multiplier up to 4.0x. Grab Golden Apples and Power-Ups before they despawn.
+              </p>
+
+              <div class="overlay-summary-grid" id="overlaySummaryGrid" style="display: none;">
+                <div class="overlay-stat">
+                  <div class="overlay-stat-label">Final Score</div>
+                  <div class="overlay-stat-val" id="summaryScore">0</div>
+                </div>
+                <div class="overlay-stat">
+                  <div class="overlay-stat-label">Peak Combo</div>
+                  <div class="overlay-stat-val" id="summaryCombo">1.0x</div>
+                </div>
+                <div class="overlay-stat">
+                  <div class="overlay-stat-label">Length</div>
+                  <div class="overlay-stat-val" id="summaryLength">3</div>
+                </div>
+              </div>
+
+              <div class="overlay-actions">
+                <button id="btnOverlayPrimary" class="btn btn-primary" type="button">
+                  Start Run (Space)
+                </button>
+                <button id="btnOverlaySecondary" class="btn" type="button" style="display: none;">
+                  Restart (R)
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- Right Control, Legend & Leaderboard Column -->
+      <aside class="telemetry-column" aria-label="Game controls and leaderboard">
+        <!-- Arena Configuration & Tactile Controls -->
+        <section class="side-panel">
+          <div class="side-panel-header">
+            <span class="side-panel-title">Controls &amp; Pace</span>
+            <span style="font-size: 11px; color: var(--muted-foreground);">WASD / Arrows / HJKL</span>
+          </div>
+
+          <div class="setting-row">
+            <span>Base Speed</span>
+            <div class="segmented-group" id="speedPresetGroup">
+              <button id="btnSpeedChill" class="seg-btn" data-speed="chill" type="button">Chill</button>
+              <button id="btnSpeedNormal" class="seg-btn active" data-speed="normal" type="button">Normal</button>
+              <button id="btnSpeedTurbo" class="seg-btn" data-speed="turbo" type="button">Turbo</button>
+            </div>
+          </div>
+
+          <div class="setting-row">
+            <span>Arena Options</span>
+            <div style="display: flex; gap: 6px;">
+              <button id="btnToggleGrid" class="btn btn-active" type="button" style="padding: 3px 8px; font-size: 11px;">
+                Grid
+              </button>
+              <button id="btnToggleShake" class="btn btn-active" type="button" style="padding: 3px 8px; font-size: 11px;">
+                Shake
+              </button>
+            </div>
+          </div>
+
+          <div class="dpad-layout">
+            <div class="dpad-grid" role="group" aria-label="Directional pad">
+              <div></div>
+              <button id="dpadUp" class="dpad-btn" type="button" aria-label="Move Up">↑</button>
+              <div></div>
+              <button id="dpadLeft" class="dpad-btn" type="button" aria-label="Move Left">←</button>
+              <button id="dpadDown" class="dpad-btn" type="button" aria-label="Move Down">↓</button>
+              <button id="dpadRight" class="dpad-btn" type="button" aria-label="Move Right">→</button>
+            </div>
+
+            <div class="shortcut-list">
+              <div><kbd>Space</kbd> Start / Pause</div>
+              <div><kbd>R</kbd> Quick Restart</div>
+              <div><kbd>1</kbd>–<kbd>4</kbd> Switch Mode</div>
+              <div><kbd>M</kbd> Toggle Audio</div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Field Items & Multipliers Legend -->
+        <section class="side-panel">
+          <div class="side-panel-header">
+            <span class="side-panel-title">Arena Items</span>
+            <span style="font-size: 11px; color: var(--muted-foreground);">Combo window: 4.2s</span>
+          </div>
+          <div class="legend-list">
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #f43f5e;"></span>
+              <div class="legend-meta">
+                <div class="legend-name">Core Apple</div>
+                <div class="legend-desc">+10 × combo • +1 len</div>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #f59e0b;"></span>
+              <div class="legend-meta">
+                <div class="legend-name">Golden Apple</div>
+                <div class="legend-desc">+50 × combo • +2 len</div>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #10b981;"></span>
+              <div class="legend-meta">
+                <div class="legend-name">Overdrive</div>
+                <div class="legend-desc">2× Score for 8s</div>
+              </div>
+            </div>
+            <div class="legend-item">
+              <span class="legend-dot" style="background: #0ea5e9;"></span>
+              <div class="legend-meta">
+                <div class="legend-name">Chrono Frost</div>
+                <div class="legend-desc">Slows pace 30% (6s)</div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <!-- Persistent Leaderboard -->
+        <section class="side-panel">
+          <div class="side-panel-header">
+            <span class="side-panel-title">Top Runs Leaderboard</span>
+            <button id="btnResetScores" class="btn" type="button" style="padding: 2px 7px; font-size: 10.5px;">
+              Reset
+            </button>
+          </div>
+          <div class="leaderboard-list" id="leaderboardList">
+            <div class="empty-hint">Complete a run to record your score on the leaderboard.</div>
+          </div>
+        </section>
+
+        <!-- Lifetime Career Stats -->
+        <section class="side-panel">
+          <div class="side-panel-header">
+            <span class="side-panel-title">Career Telemetry</span>
+          </div>
+          <div class="lifetime-grid">
+            <div class="lifetime-item">
+              <span>Runs Played</span>
+              <span id="statGamesPlayed">0</span>
+            </div>
+            <div class="lifetime-item">
+              <span>Apples Eaten</span>
+              <span id="statApplesEaten">0</span>
+            </div>
+            <div class="lifetime-item">
+              <span>Best Combo</span>
+              <span id="statBestCombo">1.0x</span>
+            </div>
+            <div class="lifetime-item">
+              <span>Max Length</span>
+              <span id="statLongestSnake">3</span>
+            </div>
+          </div>
+        </section>
+      </aside>
+    </div>
+  </div>
+
+  <script src="/app.js"></script>
+</body>
+</html>
