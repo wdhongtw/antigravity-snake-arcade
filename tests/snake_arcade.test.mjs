@@ -82,7 +82,7 @@ await test('SnakeStore records runs, updates high scores, leaderboard, and setti
   }
 });
 
-await test('Sidecar HTTP server serves /, /aux, static assets, and token-protected POST APIs', async () => {
+await test('Sidecar HTTP server serves /, static assets, and token-protected POST APIs', async () => {
   const dir = mkdtempSync(join(tmpdir(), 'snake-http-'));
   process.env.ANTIGRAVITY_SIDECAR_UI_TOKEN = 'test-secret-token';
   try {
@@ -99,10 +99,6 @@ await test('Sidecar HTTP server serves /, /aux, static assets, and token-protect
     assert.equal(htmlRes.status, 200);
     const htmlText = await htmlRes.text();
     assert.ok(htmlText.includes('Snake Arcade'));
-
-    // GET /aux (SIDECAR_UI_ENTRYPOINT_AUX_PANE)
-    const auxRes = await fetch(`${baseUrl}/aux`);
-    assert.equal(auxRes.status, 200);
 
     // GET /styles.css and /app.js
     const cssRes = await fetch(`${baseUrl}/styles.css`);

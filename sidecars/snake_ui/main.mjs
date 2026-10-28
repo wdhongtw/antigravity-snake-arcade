@@ -1,9 +1,9 @@
 /**
  * @fileoverview Snake Arcade Sidecar Backend Server.
  *
- * Serves the Snake Arcade UI for both `SIDECAR_UI_ENTRYPOINT_SIDEBAR` (`/`)
- * and `SIDECAR_UI_ENTRYPOINT_AUX_PANE` (`/aux`), and provides JSON API routes
- * for persisting high scores, leaderboards, run telemetry, and user settings.
+ * Serves the Snake Arcade UI for `SIDECAR_UI_ENTRYPOINT_SIDEBAR` (`/`)
+ * and provides JSON API routes for persisting high scores, leaderboards,
+ * run telemetry, and user settings.
  */
 
 import { readFileSync, watchFile } from 'node:fs';
@@ -26,7 +26,6 @@ export function createSnakeSidecarApp({ storagePath, allowDefaultPort = false } 
   const serveIndex = () => readFileSync(join(__dirname, 'index.html'), 'utf-8');
   app.page('/', serveIndex);
   app.page('/index.html', serveIndex);
-  app.page('/aux', serveIndex);
   app.page('/sidebar', serveIndex);
 
   for (const [route, [file, contentType]] of Object.entries(STATIC_ASSETS)) {

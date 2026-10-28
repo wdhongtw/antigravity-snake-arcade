@@ -1,12 +1,11 @@
 # Snake Arcade (`snake-arcade`)
 
-Interactive arcade Snake game UI plugin for the **Extensions** sidebar (`SIDECAR_UI_ENTRYPOINT_SIDEBAR`) and per-conversation **Auxiliary Pane** (`SIDECAR_UI_ENTRYPOINT_AUX_PANE`).
+Interactive arcade Snake game UI plugin for the **Extensions** sidebar (`SIDECAR_UI_ENTRYPOINT_SIDEBAR`).
 
 ## Key Features
 
-- **Dual UI Entrypoints**:
-  - **Sidebar Full-Pane View (`SIDECAR_UI_ENTRYPOINT_SIDEBAR`)**: Registers under the left sidebar's **Extensions** section (`/`) and opens as a full-pane arcade cabinet view.
-  - **Auxiliary Pane View (`SIDECAR_UI_ENTRYPOINT_AUX_PANE`)**: Opens at `/aux` inside the conversation side panel so you can play alongside an active chat session.
+- **Sidebar Full-Pane Entrypoint (`SIDECAR_UI_ENTRYPOINT_SIDEBAR`)**:
+  - Registers under the left sidebar's **Extensions** section (`/`) and opens as a full-pane arcade cabinet view.
 - **Game Modes**:
   - **Classic**: Solid perimeter walls where movement pace scales up as your snake grows.
   - **Wrap**: Portal edges that wrap seamlessly across opposite sides of the arena.
